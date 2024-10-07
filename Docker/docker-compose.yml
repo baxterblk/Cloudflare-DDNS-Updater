@@ -1,0 +1,11 @@
+services:
+  ddns-updater:
+    build: .
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - ZONE_ID=${ZONE_ID}
+      - DOMAIN=${DOMAIN}
+      - SUBDOMAINS=${SUBDOMAINS}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
