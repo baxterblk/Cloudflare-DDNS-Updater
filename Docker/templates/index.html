@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDNS Updater</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        #results { margin-top: 20px; }
+        #current-ip { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>DDNS Updater</h1>
+    <div id="current-ip">Current IP: <span id="ip-address">Loading...</span></div>
+    <button onclick="updateIP()">Update IP for All Subdomains</button>
+    <div id="results"></div>
+
+    <script>
+        function getCurrentIP() {
+            fetch('/get_current_ip')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('ip-address').textContent = data.ip;
+                });
+        }
+
+        function updateIP() {
+            fetch('/update_ip')
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = '<h2>Update Results:</h2>';
+                    data.forEach(result => {
+                        resultsDiv.innerHTML += `<p>${result}</p>`;
+                    });
+                    getCurrentIP();
+                });
+        }
+
+        getCurrentIP();
+        setInterval(getCurrentIP, 300000); // Update IP every 5 minutes
+    </script>
+</body>
+</html>
