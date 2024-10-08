@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ domain.name }} - DDNS Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .record-form { margin-top: 20px; }
+        .record-form input, .record-form select { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <h1>{{ domain.name }}</h1>
+    <h2>DNS Records</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Content</th>
+                <th>Auto Update</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.name }}</td>
+                <td>{{ record.type }}</td>
+                <td>{{ record.content }}</td>
+                <td>{{ 'Yes' if record.auto_update else 'No' }}</td>
+                <td>
+                    <form class="update-form" data-record-id="{{ record.id }}">
+                        <input type="text" name="new_ip" placeholder="New IP">
+                        <button type="submit">Update</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Add New Record</h2>
+    <form id="create-record-form" class="record-form">
+        <input type="text" name="name" placeholder="Name" required>
+        <select name="type" required>
+            <option value="A">A</option>
+            <option value="AAAA">AAAA</option>
+            <option value="CNAME">CNAME</option>
+        </select>
+        <input type="text" name="content" placeholder="Content" required>
+        <label>
+            <input type="checkbox" name="auto_update"> Auto Update
+        </label>
+        <button type="submit">Create Record</button>
+    </form>
+
+    <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const updateForms = document.querySelectorAll('.update-form');
+            updateForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const recordId = this.dataset.recordId;
+                    const newIp = this.querySelector('input[name="new_ip"]').value;
+                    fetch(`/update_record/{{ domain.id }}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `record_id=${recordId}&new_ip=${newIp}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        location.reload();
+                    });
+                });
+            });
+
+            const createForm = document.getElementById('create-record-form');
+            createForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                fetch(`/create_record/{{ domain.id }}`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    location.reload();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
