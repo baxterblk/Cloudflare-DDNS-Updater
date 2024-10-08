@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare DDNS Updater</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .header {
+            background-color: #F6821F; /* Cloudflare orange */
+            color: white;
+            padding: 10px 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+        }
+        .sidebar {
+            background-color: #000000;
+            color: #F2F2F2;
+            width: 200px;
+            padding: 20px;
+        }
+        .main-content {
+            flex: 1;
+            background-color: #F2F2F2;
+            color: #000000;
+            padding: 20px;
+        }
+        .domain-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .domain-list li {
+            margin-bottom: 10px;
+        }
+        .domain-list a {
+            color: #F2F2F2;
+            text-decoration: none;
+        }
+        .domain-list a:hover {
+            text-decoration: underline;
+        }
+        .add-domain-link {
+            display: block;
+            margin-top: 20px;
+            color: #F2F2F2;
+            text-decoration: none;
+        }
+        .add-domain-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        Cloudflare DDNS Updater
+    </div>
+    <div class="content-wrapper">
+        <div class="sidebar">
+            <h2>Domains</h2>
+            <ul class="domain-list">
+                {% for domain in domains %}
+                    <li><a href="{{ url_for('view_domain', domain_id=domain.id) }}">{{ domain.name }}</a></li>
+                {% endfor %}
+            </ul>
+            <a href="{{ url_for('add_domain') }}" class="add-domain-link">Add New Domain</a>
+        </div>
+        <div class="main-content">
+            <h2>Welcome to DDNS Manager</h2>
+            <p>Select a domain from the sidebar to manage its DNS records, or add a new domain.</p>
+        </div>
+    </div>
+</body>
+</html>
