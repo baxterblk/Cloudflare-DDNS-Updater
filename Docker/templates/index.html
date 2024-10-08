@@ -3,46 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDNS Updater</title>
+    <title>DDNS Manager</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
         h1 { color: #333; }
-        button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-        #results { margin-top: 20px; }
-        #current-ip { margin-bottom: 20px; }
+        .sidebar { float: left; width: 200px; }
+        .main-content { margin-left: 220px; }
+        .domain-list { list-style-type: none; padding: 0; }
+        .domain-list li { margin-bottom: 10px; }
+        .domain-list a { text-decoration: none; color: #0066cc; }
+        .domain-list a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <h1>DDNS Updater</h1>
-    <div id="current-ip">Current IP: <span id="ip-address">Loading...</span></div>
-    <button onclick="updateIP()">Update IP for All Subdomains</button>
-    <div id="results"></div>
-
-    <script>
-        function getCurrentIP() {
-            fetch('/get_current_ip')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('ip-address').textContent = data.ip;
-                });
-        }
-
-        function updateIP() {
-            fetch('/update_ip')
-                .then(response => response.json())
-                .then(data => {
-                    const resultsDiv = document.getElementById('results');
-                    resultsDiv.innerHTML = '<h2>Update Results:</h2>';
-                    data.forEach(result => {
-                        resultsDiv.innerHTML += `<p>${result}</p>`;
-                    });
-                    getCurrentIP();
-                });
-        }
-
-        getCurrentIP();
-        setInterval(getCurrentIP, 300000); // Update IP every 5 minutes
-    </script>
+    <h1>DDNS Manager</h1>
+    <div class="sidebar">
+        <h2>Domains</h2>
+        <ul class="domain-list">
+            {% for domain in domains %}
+                <li><a href="{{ url_for('view_domain', domain_id=domain.id) }}">{{ domain.name }}</a></li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('add_domain') }}">Add New Domain</a>
+    </div>
+    <div class="main-content">
+        <h2>Welcome to DDNS Manager</h2>
+        <p>Select a domain from the sidebar to manage its DNS records, or add a new domain.</p>
+    </div>
 </body>
 </html>
